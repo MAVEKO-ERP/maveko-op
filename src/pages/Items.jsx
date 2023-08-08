@@ -23,14 +23,81 @@ export default function Item() {
   const [subTitle, setSubTitle] = useState("> List Items");
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogActive, setDialogActive] = useState("1");
-  const [supplierName, setSupplierName] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [itemDescription, setItemDescription] = useState("");
+  const [salesUnitPrice, setSalesUnitPrice] = useState("0.00");
+  const [purchaseUnitPrice, setPurchaseUnitPrice] = useState("0.00");
+  const [salesUnit, setSalesUnit] = useState("");
+  const [taxCode, setTaxCode] = useState("");
+  const [validFrom, setValidFrom] = useState();
+  const [validTo, setValidTo] = useState();
+  const [supplierValue, setSupplierValue] = useState("");
 
   const inputFields = [
     {
       label: "Item Name",
-      value: supplierName,
-      change: setSupplierName,
+      value: itemName,
+      change: setItemName,
       width: "332.5px",
+    },
+    {
+      label: "Item Description",
+      value: itemDescription,
+      change: setItemDescription,
+      width: "650.5px",
+    },
+    {
+      label: "Purchasing Unit Price",
+      value: purchaseUnitPrice,
+      change: setPurchaseUnitPrice,
+      width: "332.5px",
+    },
+    {
+      label: "Selling Unit Price",
+      value: salesUnitPrice,
+      change: setSalesUnitPrice,
+      width: "332.5px",
+    },
+    {
+      label: "Sales Unit",
+      value: salesUnit,
+      change: setSalesUnit,
+      width: "332.5px",
+    },
+    {
+      label: "Tax Class",
+      value: taxCode,
+      change: setTaxCode,
+      width: "300px",
+      options: [
+        { value: "1", label: "CLASS A" },
+        { value: "2", label: "CLASS S" },
+      ],
+    },
+    {
+      label: "Price Valid From",
+      date: true,
+      value: validFrom,
+      change: setValidFrom,
+      width: "300px",
+    },
+    {
+      label: "Price Valid To",
+      date: true,
+      value: validTo,
+      change: setValidTo,
+      width: "300px",
+    },
+    {
+      label: "Supplier",
+      value: supplierValue,
+      change: setSupplierValue,
+      width: "300px",
+      options: [
+        { value: "1", label: "Supplier 1" },
+        { value: "2", label: "Supplier 2" },
+        { value: "3", label: "Supplier 3" },
+      ],
     },
   ];
 
