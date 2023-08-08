@@ -36,6 +36,7 @@ export default function Customer() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
+  const [country, setCountry] = useState("");
 
   const inputFields = [
     {
@@ -119,6 +120,12 @@ export default function Customer() {
       label: "Address Line",
       value: addressLine,
       change: setAddressLine,
+      width: "332.5px",
+    },
+    {
+      label: "Country",
+      value: country,
+      change: setCountry,
       width: "332.5px",
     },
     {
