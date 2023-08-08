@@ -104,7 +104,7 @@ export default function CreateOrder({ noActions, headers }) {
       ],
     },
     {
-      label: "Tax Code",
+      label: "Tax Class",
       value: taxCode,
       change: setTaxCode,
       width: "200px",
