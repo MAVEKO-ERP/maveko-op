@@ -6,6 +6,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import { UilComment } from "@iconscout/react-unicons";
+import { UilCheck } from "@iconscout/react-unicons";
+import { UilTimes } from '@iconscout/react-unicons'
 
 export default function OrderList({ open, setDialogActive, type }) {
   const [checked, setChecked] = React.useState([0]);
@@ -104,6 +106,7 @@ export default function OrderList({ open, setDialogActive, type }) {
                   open(true);
                   setDialogActive(`PO-DOC-786632${value + 1}`);
                 }}
+                disabled={value % 2 === 0 || value === 5}
                 edge="end"
                 aria-label="comments"
                 sx={{
@@ -116,7 +119,43 @@ export default function OrderList({ open, setDialogActive, type }) {
               >
                 <UilComment />
               </IconButton>
-            ) : null}
+            ) : (
+              <div style={{display: "flex"}}>
+                <IconButton
+                  color="success"
+                  onClick={() => {}}
+                  edge="end"
+                  disabled={value % 2 === 0 || value === 5}
+                  aria-label="comments"
+                  sx={{
+                    padding: "15px",
+                    paddingInline: "25px",
+                    border: "1px solid #d6d6cd",
+                    borderRadius: "5px",
+                    marginBottom: "8px",
+                    marginRight: "15px",
+                  }}
+                >
+                  <UilCheck />
+                </IconButton>
+                <IconButton
+                  color="error"
+                  onClick={() => {}}
+                  edge="end"
+                  disabled={value % 2 === 0 || value === 5}
+                  aria-label="comments"
+                  sx={{
+                    padding: "15px",
+                    paddingInline: "25px",
+                    border: "1px solid #d6d6cd",
+                    borderRadius: "5px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <UilTimes />
+                </IconButton>
+              </div>
+            )}
           </div>
         );
       })}
