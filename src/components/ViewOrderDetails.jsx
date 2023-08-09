@@ -1,147 +1,177 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
-import Divider from "@mui/material/Divider";
 import MenuItem from "@mui/material/MenuItem";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Button from "@mui/material/Button";
 import dayjs from "dayjs";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
 
-export default function ViewOrder({ noActions, headers }) {
+export default function ViewOrder({ headers }) {
   const [supplierValue, setSupplierValue] = useState("");
-  const [ownerValue, setOwnerValue] = useState("");
-  const [approved, setApproved] = useState("2");
+  const [value, setValue] = useState("1");
   const [supRef, setSupRef] = useState("");
   const [docRef, setDocRef] = useState(
-    "PO-DOC-" +
-      new Date().getFullYear() +
-      (new Date().getMonth() + 1) +
-      new Date().getHours() +
-      new Date().getSeconds()
+    headers
+      ? headers.PONumber
+      : "PO-DOC-" +
+          new Date().getFullYear() +
+          (new Date().getMonth() + 1) +
+          new Date().getHours() +
+          new Date().getSeconds()
   );
-  const [status, setStatus] = useState("OPEN");
-  const [currency, setCurrency] = useState("1");
-  const [salesOrder, setSalesOrder] = useState("");
-  const [taxCode, setTaxCode] = useState("");
-  const [terms, setTerms] = useState("1");
-  const [reqDate, setReqDate] = useState(
-    headers ? dayjs(headers.DeliveryDateToDestination) : null
-  );
-  const [expDate, setExpDate] = useState();
-  const [site, setSite] = useState("1");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const inputFields = [
     {
-      label: "Supplier",
-      value: supplierValue,
-      width: "300px",
-      change: setSupplierValue,
-      options: [
-        { value: "1", label: "Supplier 1" },
-        { value: "2", label: "Supplier 2" },
-        { value: "3", label: "Supplier 3" },
-      ],
+      label: "PO Number",
+      value: docRef.toUpperCase(),
+      change: setDocRef,
+      width: "332.5px",
     },
     {
-      label: "Owner",
-      value: ownerValue,
-      change: setOwnerValue,
-      width: "300px",
-      options: [
-        { value: "1", label: "Hana Gebeyehu" },
-        { value: "2", label: "Eyosiais Mekbib" },
-        { value: "3", label: "Nigus Solomon" },
-      ],
+      label: "Name of Ship",
+      value: headers ? headers.PODestinationName : "",
+      change: setSupRef,
+      width: "332.5px",
     },
     {
-      label: "Approval",
-      value: approved,
-      change: setApproved,
-      width: "270px",
-      options: [
-        { value: "1", label: "Approved" },
-        { value: "2", label: "Pending" },
-        { value: "3", label: "Rejected" },
-      ],
-    },
-    {
-      label: "Supplier Reference",
+      label: "Ship Number",
       value: supRef.toUpperCase(),
       change: setSupRef,
       width: "332.5px",
     },
     {
-      label: "Document Reference",
-      value: docRef,
-      change: setDocRef,
-      width: "352.5px",
+      label: "Delivery Address",
+      value: headers ? headers.DeliveryAddress1 : "",
+      change: setSupRef,
+      width: "532.5px",
     },
     {
-      label: "Status",
-      value: status,
-      disabled: true,
-      change: setStatus,
+      label: "Final Delivery",
+      value: headers
+        ? `${headers.DeliveryDateToDestination} | ${headers.DestinationDeliveryPlace}`
+        : "",
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "Voyage Number",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "Backorder Text",
+      value: supplierValue,
       width: "300px",
-    },
-    {
-      label: "Sales Order",
-      value: salesOrder,
-      change: setSalesOrder,
-      width: "200px",
-      disabled: true,
-    },
-    {
-      label: "Currency",
-      value: currency,
-      disabled: true,
-      change: setCurrency,
-      width: "150px",
+      change: setSupplierValue,
       options: [
-        { value: "1", label: "EUR" },
-        { value: "2", label: "USD" },
+        { value: "1", label: "BACKORDER" },
+        { value: "2", label: "Supplier 2" },
+        { value: "3", label: "Supplier 3" },
+      ],
+    },
+  ];
+
+  const inputFields2 = [
+    {
+      label: "Contact Person",
+      value: docRef.toUpperCase(),
+      change: setDocRef,
+      width: "332.5px",
+      select: true,
+      options: [
+        { value: "1", label: "Hana Gebeyehu" },
+        { value: "2", label: "Tibebu Biru" },
+        { value: "3", label: "Nigus Solomon" },
       ],
     },
     {
-      label: "Tax Code",
-      value: taxCode,
-      change: setTaxCode,
-      width: "200px",
+      label: "Customer",
+      value: headers ? headers.POSentByPersonCompany : "",
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "Street",
+      value: headers ? headers.SentInvoiceAddress3 : "",
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "City",
+      value: headers ? headers.SentInvoiceAddress2 : "",
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "Address",
+      value: headers
+        ? headers.SentInvoiceAddress5 +
+          " | " +
+          headers.SentInvoiceAddress4 +
+          " | " +
+          headers.SentInvoiceAddress6
+        : "",
+      change: setSupRef,
+      width: "332.5px",
+    },
+  ];
+
+  const inputFields3 = [
+    {
+      label: "Recipient Person",
+      value: docRef.toUpperCase(),
+      change: setDocRef,
+      width: "332.5px",
+      select: true,
       options: [
-        { value: "1", label: "CLASS A" },
-        { value: "2", label: "CLASS S" },
+        { value: "1", label: "Hana Gebeyehu" },
+        { value: "2", label: "Tibebu Biru" },
+        { value: "3", label: "Nigus Solomon" },
       ],
     },
     {
       label: "Terms",
-      value: terms,
-      change: setTerms,
-      width: "200px",
-      options: [{ value: "1", label: "30 Days" }],
+      value: headers ? headers.PaymentTerms : "",
+      change: setSupRef,
+      width: "332.5px",
     },
     {
-      label: "Site",
-      value: site,
-      change: setSite,
-      width: "200px",
-      options: [
-        { value: "1", label: "Warehouse 1" },
-        { value: "2", label: "Warehouse 2" },
-        { value: "3", label: "Warehouse 3" },
-      ],
+      label: "Process Matchcode",
+      value: headers ? headers.PONumber : "",
+      change: setSupRef,
+      width: "332.5px",
     },
     {
-      label: "Required Date",
-      value: reqDate,
+      label: "Refernce Date",
+      value: headers ? dayjs(headers.POSentDate) : "",
+      change: setSupRef,
+      width: "332.5px",
       date: true,
-      change: setReqDate,
+    },
+    {
+      label: "Delivery Date",
+      value: headers ? dayjs(headers.DeliveryDateToDestination) : "",
+      change: setSupRef,
+      width: "332.5px",
+      date: true,
     },
     {
       label: "Expected Date",
-      value: expDate,
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
       date: true,
-      change: setExpDate,
     },
   ];
 
@@ -191,52 +221,45 @@ export default function ViewOrder({ noActions, headers }) {
       />
     );
 
+  const renderFields = (fields) => (
+    <div
+      className="newOrder"
+      style={{
+        display: "flex",
+        marginLeft: -20,
+        justifyContent: "flex-start",
+        flexWrap: "wrap",
+      }}
+    >
+      {fields.map((field) => (
+        <React.Fragment key={field.label}>
+          {renderTextField(field)}
+          <div className="space" style={{ width: "20px" }}></div>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+
   return (
     <>
-      <div
-        className="newOrder"
-        style={{
-          display: "flex",
-          marginLeft: -20,
-          justifyContent: "flex-start",
-          flexWrap: "wrap",
-        }}
-      >
-        {inputFields.map((field) => (
-          <React.Fragment key={field.label}>
-            {renderTextField(field)}
-            <div className="space" style={{ width: "20px" }}></div>
-          </React.Fragment>
-        ))}
-      </div>
-      <Divider
-        sx={{ mt: 5, ml: -2, mb: 5, display: noActions ? "none" : "" }}
-      ></Divider>
-      <div
-        className="actions"
-        style={{
-          display: noActions ? "none" : "flex",
-          justifyContent: "flex-end",
-          marginTop: "25px",
-        }}
-      >
-        <Button
-          onClick={() => {}}
-          variant="outlined"
-          color="error"
-          style={{ padding: "12px", paddingInline: "50px" }}
-        >
-          CANCEL
-        </Button>
-        <div className="sapce" style={{ width: "15px" }}></div>
-        <Button
-          variant="contained"
-          color="success"
-          style={{ padding: "12px", paddingInline: "50px" }}
-        >
-          SAVE ORDER
-        </Button>
-      </div>
+      <TabContext sx={{ ml: -10 }} value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", ml: -1.5 }}>
+          <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <Tab label="Maveko Details" value="1" />
+            <Tab label="Customer Details" value="2" />
+            <Tab label="Document Details" value="3" />
+          </TabList>
+        </Box>
+        <TabPanel sx={{ ml: -2 }} value="1">
+          {renderFields(inputFields)}
+        </TabPanel>
+        <TabPanel sx={{ ml: -2 }} value="2">
+          {renderFields(inputFields2)}
+        </TabPanel>
+        <TabPanel sx={{ ml: -2 }} value="3">
+          {renderFields(inputFields3)}
+        </TabPanel>
+      </TabContext>
     </>
   );
 }

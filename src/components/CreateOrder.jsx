@@ -7,141 +7,176 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Button from "@mui/material/Button";
-import dayjs from "dayjs";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+import POTable from "../components/POTable";
+// import dayjs from "dayjs";
 
 export default function CreateOrder({ noActions, headers }) {
   const [supplierValue, setSupplierValue] = useState("");
-  const [ownerValue, setOwnerValue] = useState("");
-  const [approved, setApproved] = useState("2");
+  const [value, setValue] = useState("1");
   const [supRef, setSupRef] = useState("");
-  const [docRef, setDocRef] = useState( headers ? headers.PONumber : 
-    "PO-DOC-" +
-      new Date().getFullYear() +
-      (new Date().getMonth() + 1) +
-      new Date().getHours() +
-      new Date().getSeconds()
+  const [sampleRows, setSampleRows] = useState([]);
+  const [line, setLine] = useState(1);
+  const [docRef, setDocRef] = useState(
+    headers
+      ? headers.PONumber
+      : "PO-DOC-" +
+          new Date().getFullYear() +
+          (new Date().getMonth() + 1) +
+          new Date().getHours() +
+          new Date().getSeconds()
   );
-  const [status, setStatus] = useState("OPEN");
-  const [currency, setCurrency] = useState("1");
-  const [salesOrder, setSalesOrder] = useState("");
-  const [taxCode, setTaxCode] = useState("");
-  const [terms, setTerms] = useState("1");
-  const [reqDate, setReqDate] = useState(
-    headers ? dayjs(headers.DeliveryDateToDestination) : null
-  );
-  const [expDate, setExpDate] = useState();
-  const [site, setSite] = useState("1");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const header = {
+    Currency: "Euro",
+  };
 
   const inputFields = [
     {
-      label: "Supplier",
-      value: supplierValue,
-      width: "300px",
-      change: setSupplierValue,
-      options: [
-        { value: "1", label: "Supplier 1" },
-        { value: "2", label: "Supplier 2" },
-        { value: "3", label: "Supplier 3" },
-      ],
+      label: "PO Number",
+      value: docRef.toUpperCase(),
+      change: setDocRef,
+      width: "332.5px",
     },
     {
-      label: "Owner",
-      value: ownerValue,
-      change: setOwnerValue,
-      width: "300px",
-      options: [
-        { value: "1", label: "Hana Gebeyehu" },
-        { value: "2", label: "Eyosiais Mekbib" },
-        { value: "3", label: "Nigus Solomon" },
-      ],
-    },
-    {
-      label: "Approval",
-      value: approved,
-      change: setApproved,
-      width: "270px",
-      options: [
-        { value: "1", label: "Approved" },
-        { value: "2", label: "Pending" },
-        { value: "3", label: "Rejected" },
-      ],
-    },
-    {
-      label: "Supplier Reference",
+      label: "Name of Ship",
       value: supRef.toUpperCase(),
       change: setSupRef,
       width: "332.5px",
     },
     {
-      label: "Document Reference",
-      value: docRef,
-      change: setDocRef,
-      width: "352.5px",
+      label: "Ship Number",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
     },
     {
-      label: "Status",
-      value: status,
-      disabled: true,
-      change: setStatus,
+      label: "Delivery Address",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "Final Delivery",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "Voyage Number",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "Backorder Text",
+      value: supplierValue,
       width: "300px",
-    },
-    {
-      label: "Sales Order",
-      value: salesOrder,
-      change: setSalesOrder,
-      width: "200px",
-      disabled: true,
-    },
-    {
-      label: "Currency",
-      value: currency,
-      disabled: true,
-      change: setCurrency,
-      width: "150px",
+      change: setSupplierValue,
       options: [
-        { value: "1", label: "EUR" },
-        { value: "2", label: "USD" },
+        { value: "1", label: "BACKORDER" },
+        { value: "2", label: "Supplier 2" },
+        { value: "3", label: "Supplier 3" },
+      ],
+    },
+  ];
+
+  const inputFields2 = [
+    {
+      label: "Contact Person",
+      value: docRef.toUpperCase(),
+      change: setDocRef,
+      width: "332.5px",
+      select: true,
+      options: [
+        { value: "1", label: "Hana Gebeyehu" },
+        { value: "2", label: "Tibebu Biru" },
+        { value: "3", label: "Nigus Solomon" },
       ],
     },
     {
-      label: "Tax Class",
-      value: taxCode,
-      change: setTaxCode,
-      width: "200px",
+      label: "Customer",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+      select: true,
+      options: [{ value: "1", label: "Viking Ocean Cruises LTD" }],
+    },
+    {
+      label: "Street",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "City",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+    },
+    {
+      label: "Address",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+    },
+  ];
+
+  const inputFields3 = [
+    {
+      label: "Recipient Person",
+      value: docRef.toUpperCase(),
+      change: setDocRef,
+      width: "332.5px",
+      select: true,
       options: [
-        { value: "1", label: "CLASS A" },
-        { value: "2", label: "CLASS S" },
+        { value: "1", label: "Hana Gebeyehu" },
+        { value: "2", label: "Tibebu Biru" },
+        { value: "3", label: "Nigus Solomon" },
       ],
     },
     {
       label: "Terms",
-      value: terms,
-      change: setTerms,
-      width: "200px",
-      options: [{ value: "1", label: "30 Days" }],
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+      select: true,
+      options: [{ value: "1", label: "30 DAYS" }],
     },
     {
-      label: "Site",
-      value: site,
-      change: setSite,
-      width: "200px",
-      options: [
-        { value: "1", label: "Warehouse 1" },
-        { value: "2", label: "Warehouse 2" },
-        { value: "3", label: "Warehouse 3" },
-      ],
+      label: "Process Matchcode",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
     },
     {
-      label: "Required Date",
-      value: reqDate,
+      label: "Refernce Date",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
       date: true,
-      change: setReqDate,
+    },
+    {
+      label: "Delivery Date",
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
+      date: true,
     },
     {
       label: "Expected Date",
-      value: expDate,
+      value: supRef.toUpperCase(),
+      change: setSupRef,
+      width: "332.5px",
       date: true,
-      change: setExpDate,
     },
   ];
 
@@ -191,26 +226,74 @@ export default function CreateOrder({ noActions, headers }) {
       />
     );
 
+  const renderFields = (fields) => (
+    <div
+      className="newOrder"
+      style={{
+        display: "flex",
+        marginLeft: -20,
+        justifyContent: "flex-start",
+        flexWrap: "wrap",
+      }}
+    >
+      {fields.map((field) => (
+        <React.Fragment key={field.label}>
+          {renderTextField(field)}
+          <div className="space" style={{ width: "20px" }}></div>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+
   return (
     <>
-      <div
-        className="newOrder"
-        style={{
-          display: "flex",
-          marginLeft: -20,
-          justifyContent: "flex-start",
-          flexWrap: "wrap",
+      <TabContext sx={{ ml: -10 }} value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", ml: -1.5 }}>
+          <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <Tab label="Maveko Details" value="1" />
+            <Tab label="Customer Details" value="2" />
+            <Tab label="Document Details" value="3" />
+          </TabList>
+        </Box>
+        <TabPanel sx={{ ml: -2 }} value="1">
+          {renderFields(inputFields)}
+        </TabPanel>
+        <TabPanel sx={{ ml: -2 }} value="2">
+          {renderFields(inputFields2)}
+        </TabPanel>
+        <TabPanel sx={{ ml: -2 }} value="3">
+          {renderFields(inputFields3)}
+        </TabPanel>
+      </TabContext>
+      <Button
+        onClick={() => {
+          setLine(line + 1);
+          setSampleRows([
+            ...sampleRows,
+            {
+              LineNumber: line,
+              ItemCode: "ITM00"+line+line,
+              ItemName: "Sample Item",
+              ItemPackingSpec: "Sample Packing",
+              GeneralSpec: "Sample Spec",
+              UOM: "PCS",
+              QuantityReceived: 10,
+              UnitPrice: 25.99,
+              QuantityOrdered: 15,
+              TotalPrice: 389.85,
+              Currency: "Euro",
+            },
+          ]);
         }}
+        variant="contained"
+        color="primary"
+        style={{ padding: "12px", paddingInline: "50px", marginLeft: "-10px" }}
       >
-        {inputFields.map((field) => (
-          <React.Fragment key={field.label}>
-            {renderTextField(field)}
-            <div className="space" style={{ width: "20px" }}></div>
-          </React.Fragment>
-        ))}
-      </div>
+        ADD ITEMS
+      </Button>
+      <POTable noHeader={true} rows={sampleRows} headers={header}></POTable>
       <Divider
-        sx={{ mt: 5, ml: -2, mb: 5, display: noActions ? "none" : "" }}
+        sx={{ mt: 5, ml: -5, mb: 5, display: noActions ? "none" : "" }}
       ></Divider>
       <div
         className="actions"
@@ -221,7 +304,10 @@ export default function CreateOrder({ noActions, headers }) {
         }}
       >
         <Button
-          onClick={() => {}}
+          onClick={() => {
+            setSampleRows([]);
+            setLine(1);
+          }}
           variant="outlined"
           color="error"
           style={{ padding: "12px", paddingInline: "50px" }}
