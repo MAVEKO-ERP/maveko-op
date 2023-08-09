@@ -16,6 +16,7 @@ export default function ViewOrder({ headers }) {
   const [supplierValue, setSupplierValue] = useState("");
   const [value, setValue] = useState("1");
   const [supRef, setSupRef] = useState("");
+  const [expDate, setExpDate] = useState();
   const [docRef, setDocRef] = useState(
     headers
       ? headers.PONumber
@@ -33,7 +34,7 @@ export default function ViewOrder({ headers }) {
   const inputFields = [
     {
       label: "PO Number",
-      value: docRef.toUpperCase(),
+      value: headers ? headers.PONumber: "",
       change: setDocRef,
       width: "332.5px",
     },
@@ -168,8 +169,8 @@ export default function ViewOrder({ headers }) {
     },
     {
       label: "Expected Date",
-      value: supRef.toUpperCase(),
-      change: setSupRef,
+      value: expDate,
+      change: setExpDate,
       width: "332.5px",
       date: true,
     },
