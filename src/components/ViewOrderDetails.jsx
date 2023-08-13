@@ -34,7 +34,7 @@ export default function ViewOrder({ headers }) {
   const inputFields = [
     {
       label: "PO Number",
-      value: headers ? headers.PONumber: "",
+      value: headers ? headers.PONumber : "",
       change: setDocRef,
       width: "332.5px",
     },
@@ -46,7 +46,7 @@ export default function ViewOrder({ headers }) {
     },
     {
       label: "Ship Number",
-      value: supRef.toUpperCase(),
+      value: supRef,
       change: setSupRef,
       width: "332.5px",
     },
@@ -66,7 +66,7 @@ export default function ViewOrder({ headers }) {
     },
     {
       label: "Voyage Number",
-      value: supRef.toUpperCase(),
+      value: supRef,
       change: setSupRef,
       width: "332.5px",
     },
@@ -86,7 +86,7 @@ export default function ViewOrder({ headers }) {
   const inputFields2 = [
     {
       label: "Contact Person",
-      value: docRef.toUpperCase(),
+      value: docRef,
       change: setDocRef,
       width: "332.5px",
       select: true,
@@ -131,7 +131,7 @@ export default function ViewOrder({ headers }) {
   const inputFields3 = [
     {
       label: "Recipient Person",
-      value: docRef.toUpperCase(),
+      value: docRef,
       change: setDocRef,
       width: "332.5px",
       select: true,
@@ -204,7 +204,7 @@ export default function ViewOrder({ headers }) {
           label={field.label}
           value={field.value}
           onChange={(newValue) => {
-            field.change(newValue);
+            field.change ? field.change(newValue) : null;
           }}
         ></DatePicker>
       </LocalizationProvider>
@@ -218,7 +218,7 @@ export default function ViewOrder({ headers }) {
         }}
         label={field.label}
         variant="outlined"
-        onChange={(e) => field.change(e.target.value)}
+        onChange={(e) => (field.change ? field.change(e.target.value) : null)}
       />
     );
 

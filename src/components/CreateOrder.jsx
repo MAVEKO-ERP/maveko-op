@@ -193,7 +193,7 @@ export default function CreateOrder({ noActions, headers }) {
         }}
         label={field.label}
         variant="outlined"
-        onChange={(e) => field.change(e.target.value)}
+        onChange={(e) => (field.change ? field.change(e.target.value) : null)}
       >
         {field.options.map((option) => (
           <MenuItem key={option.value} value={option.value}>
@@ -208,7 +208,7 @@ export default function CreateOrder({ noActions, headers }) {
           label={field.label}
           value={field.value}
           onChange={(newValue) => {
-            field.change(newValue);
+            field.change ? field.change(newValue) : null;
           }}
         ></DatePicker>
       </LocalizationProvider>
@@ -222,7 +222,7 @@ export default function CreateOrder({ noActions, headers }) {
         }}
         label={field.label}
         variant="outlined"
-        onChange={(e) => field.change(e.target.value)}
+        onChange={(e) => field.change ? field.change(e.target.value): null}
       />
     );
 
@@ -272,7 +272,7 @@ export default function CreateOrder({ noActions, headers }) {
             ...sampleRows,
             {
               LineNumber: line,
-              ItemCode: "ITM00"+line+line,
+              ItemCode: "ITM00" + line + line,
               ItemName: "Sample Item",
               ItemPackingSpec: "Sample Packing",
               GeneralSpec: "Sample Spec",
