@@ -56,7 +56,6 @@ export default function POTable({
               editableRows[index].client_order.order_number +
               editableRows[index].supplier_name,
             order_date: new Date().toISOString(),
-            terms: JSON.stringify({ freight_terms: "FOB", currency: "EURO" }),
             supplier_id: editableRows[index].supplier_id,
             delivery_address: JSON.parse(
               editableRows[index].client_order.metadata

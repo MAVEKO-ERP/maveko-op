@@ -5,7 +5,7 @@ import { UilPackage } from "@iconscout/react-unicons";
 // import { UilFolder } from '@iconscout/react-unicons'
 import { UilUserSquare } from '@iconscout/react-unicons'
 import { UilSignout } from '@iconscout/react-unicons'
-import { UilBell } from '@iconscout/react-unicons'
+// import { UilBell } from '@iconscout/react-unicons'
 // import { UilFileInfoAlt } from '@iconscout/react-unicons'
 // import { UilFileEditAlt } from '@iconscout/react-unicons'
 
@@ -62,14 +62,14 @@ export const menus = [
 ];
 
 export const subMenus = [
-  {
-    id: 1,
-    name: "Notifications",
-    link: "/",
-    notification: true,
-    icon: <UilBell />,
-    description: "list of all available suppliers",
-  },
+  // {
+  //   id: 1,
+  //   name: "Notifications",
+  //   link: "/",
+  //   notification: true,
+  //   icon: <UilBell />,
+  //   description: "list of all available suppliers",
+  // },
   {
     id: 2,
     name: `${localStorage.getItem("name")}`,
