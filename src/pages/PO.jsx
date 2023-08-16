@@ -41,6 +41,7 @@ export default function PO() {
   const [display, setDisplay] = useState("none");
   const [orders, setOrders] = useState([]);
   const [orderItems, setOrderItems] = useState([]);
+  const [displayBO, setDisplayBO] = useState(false);
 
   const handleClose = () => {
     setOpenDialog(false);
@@ -49,6 +50,7 @@ export default function PO() {
   useEffect(() => {
     async function fetchData1() {
       if (poNumber) {
+        setDisplayBO(false);
         try {
           const response = await fetch(
             `http://localhost:3000/client_order_items/${poNumber}`
@@ -96,7 +98,7 @@ export default function PO() {
       setMessage(
         `Successfully fetched Purchase Order - ${data.header.__values__.PONumber}`
       );
-      setSeverity("success");
+      setSeverity("info");
       setOpenAlert(true);
     } catch (error) {
       setMessage(`Unable to fetch Purchase Order from - ${code}`);
@@ -121,7 +123,7 @@ export default function PO() {
           payload: {
             order_number: header.PONumber,
             delivery_date: header.DeliveryDateToDestination,
-            terms: "none",
+            terms: JSON.stringify({ freight_terms: "FOB", currency: "EURO" }),
             metadata: JSON.stringify({
               delivery_address: header.DeliveryAddress1,
               invoice_address: header.SentInvoiceAddress5
@@ -199,10 +201,8 @@ export default function PO() {
     setValue(newValue);
     setSubTitle(
       newValue === "1"
-        ? "> List Orders"
+        ? "> Prepare Purchase Order"
         : newValue === "2"
-        ? "> Create Order"
-        : newValue === "3"
         ? "> Prepare Back Order"
         : ""
     );
@@ -266,7 +266,7 @@ export default function PO() {
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange} aria-label="lab API tabs example">
               {/* <Tab label="List Orders" value="1" /> */}
-              <Tab label="Create Order" value="1" />
+              <Tab label="Prepare Purchase Order" value="1" />
               <Tab label="Prepare Back Order" value="2" />
             </TabList>
           </Box>
@@ -350,38 +350,53 @@ export default function PO() {
                 </TabList>
               </Box>
               <TabPanel value="1">
-                <TextField
-                  disabled={loading}
-                  select
-                  label="PO NUMBER"
-                  sx={{ ml: -2, width: "480px" }}
-                  variant="outlined"
-                  value={poNumber}
-                  focused={poNumber === "" ? false : true}
-                  onChange={(e) => {
-                    setPoNumber(e.target.value);
-                    setLoading(true);
-                    setDisplay("block");
-                    setTimeout(() => {
-                      setLoading(false);
-                    }, 3000);
-                  }}
-                >
-                  {orders.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.order_number}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                <div className="pb" style={{ display: "flex" }}>
+                  <TextField
+                    disabled={loading}
+                    select
+                    label="PO NUMBER"
+                    sx={{ ml: -2, width: "480px" }}
+                    variant="outlined"
+                    value={poNumber}
+                    focused={poNumber === "" ? false : true}
+                    onChange={(e) => {
+                      setPoNumber(e.target.value);
+                      setLoading(true);
+                      setDisplay("block");
+                      setTimeout(() => {
+                        setLoading(false);
+                      }, 3000);
+                    }}
+                  >
+                    {orders.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.order_number}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <div className="space" style={{ width: "20px" }}></div>
+                  <Button
+                    onClick={() => {
+                      setPoNumber("");
+                      setDisplay("none");
+                    }}
+                    disabled={loading}
+                    style={{ display: poNumber === "" ? "none" : "block" }}
+                    color="error"
+                    variant="outlined"
+                  >
+                    CLEAR
+                  </Button>
+                </div>
                 <br />
-                <br />
-                <Divider sx={{ mb: 5 }}></Divider>
+                <Divider sx={{ mb: 2, ml: -2 }}></Divider>
                 <div className="bo" style={{ display: display }}>
                   {orderItems
                     ? Object.keys(orderItems).map((key, index) => (
                         <div key={index}>
                           {" "}
                           <BOTable
+                            triggerDisplay={displayBO}
                             setOpenAlert={setOpenAlert}
                             setSeverity={setSeverity}
                             setMessage={setMessage}

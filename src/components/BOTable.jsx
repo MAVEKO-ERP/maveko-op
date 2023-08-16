@@ -14,6 +14,7 @@ import Divider from "@mui/material/Divider";
 import { currencySymbols } from "./Currencies";
 
 export default function POTable({
+  triggerDisplay,
   rows,
   loading,
   headers,
@@ -23,7 +24,7 @@ export default function POTable({
   setOpenAlert,
 }) {
   const [editableRows, setEditableRows] = useState([...rows]);
-  const [disable, setDisable] = useState(false);
+  const [disable, setDisable] = useState(triggerDisplay);
 
   const handleCellEdit = (event, rowIndex, field) => {
     const newValue = event.target.textContent;
@@ -55,7 +56,7 @@ export default function POTable({
               editableRows[index].client_order.order_number +
               editableRows[index].supplier_name,
             order_date: new Date().toISOString(),
-            terms: "none",
+            terms: JSON.stringify({ freight_terms: "FOB", currency: "EURO" }),
             supplier_id: editableRows[index].supplier_id,
             delivery_address: JSON.parse(
               editableRows[index].client_order.metadata
@@ -93,7 +94,7 @@ export default function POTable({
               }),
             }
           );
-          const { success, data1 } = await orderResponseItems.json();
+          const { success } = await orderResponseItems.json();
           if (success) {
             setMessage(
               "Successfully created backorder! " +
@@ -125,6 +126,7 @@ export default function POTable({
       setOpenAlert(true);
       setDisable(true);
     } finally {
+      setDisable(true)
       console.log("done");
     }
   };
@@ -151,7 +153,7 @@ export default function POTable({
           <>
             <Box
               style={{
-                display: disable ? "none" : "block",
+                display: disable ? "block" : "block",
                 border: "1px solid #d6d6cd",
                 marginLeft: -15,
                 marginTop: 20,
@@ -259,13 +261,13 @@ export default function POTable({
             <div
               className="actions"
               style={{
-                display: disable ? "none" : "flex",
+                display: disable ? "flex" : "flex",
                 justifyContent: "flex-end",
                 marginTop: "25px",
               }}
             >
               <Button
-                disable={disable}
+                disabled={disable}
                 onClick={saveOrder}
                 variant="contained"
                 color="success"
