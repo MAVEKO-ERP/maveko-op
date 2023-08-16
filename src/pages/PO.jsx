@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LeftDrawer from "../components/Drawer";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -9,6 +9,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { UilSync } from "@iconscout/react-unicons";
 import POTable from "../components/POTable";
+import BOTable from "../components/BOTable";
 import CreateOrder from "../components/CreateOrder";
 import MenuItem from "@mui/material/MenuItem";
 import { UilBox } from "@iconscout/react-unicons";
@@ -27,10 +28,10 @@ export default function PO() {
   const [valueSub, setValueSub] = useState("1");
   const [valueSub2, setValueSub2] = useState("1");
   const [subTitle, setSubTitle] = useState("> List Orders");
-  const [code, setCode] = useState("8C03CE1E83C24D3B8ED6159CA0D8CE4D");
+  const [code, setCode] = useState("A135140324B5494CA6A1A9FD85B3B3DE");
   const [poNumber, setPoNumber] = useState("");
   const [rows, setRows] = useState([]);
-  const [headers, setHeaders] = useState({});
+  const [header, setHeaders] = useState({});
   const [loading, setLoading] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [message, setMessage] = useState("Success!");
@@ -38,95 +39,49 @@ export default function PO() {
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogActive, setDialogActive] = useState("1");
   const [display, setDisplay] = useState("none");
-  const [subDisplay, setSubDisplay] = useState("none");
+  const [orders, setOrders] = useState([]);
+  const [orderItems, setOrderItems] = useState([]);
 
   const handleClose = () => {
     setOpenDialog(false);
   };
 
-  const sampleRows = [
-    {
-      LineNumber: 1,
-      ItemCode: "ABC123",
-      ItemName: "Sample Item",
-      ItemPackingSpec: "Sample Packing",
-      GeneralSpec: "Sample Spec",
-      UOM: "PCS",
-      QuantityReceived: 10,
-      UnitPrice: 25.99,
-      QuantityOrdered: 15,
-      TotalPrice: 389.85,
-    },
-    {
-      LineNumber: 2,
-      ItemCode: "XYZ456",
-      ItemName: "Another Item",
-      ItemPackingSpec: "Packing Info",
-      GeneralSpec: "Item Spec",
-      UOM: "BOX",
-      QuantityReceived: 5,
-      UnitPrice: 12.5,
-      QuantityOrdered: 10,
-      TotalPrice: 125,
-    },
+  useEffect(() => {
+    async function fetchData1() {
+      if (poNumber) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/client_order_items/${poNumber}`
+          );
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const data = await response.json();
+          setOrderItems(data.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    }
+    fetchData1();
+  }, [poNumber]);
 
-    {
-      LineNumber: 3,
-      ItemCode: "XYZ457",
-      ItemName: "Another Item",
-      ItemPackingSpec: "Packing Info",
-      GeneralSpec: "Item Spec",
-      UOM: "BOX",
-      QuantityReceived: 5,
-      UnitPrice: 12.5,
-      QuantityOrdered: 10,
-      TotalPrice: 125,
-    },
-    // Add more sample rows as needed
-  ];
+  async function fetchData() {
+    try {
+      const response = await fetch("http://localhost:3000/client_orders");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setOrders(data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
 
-  const sampleRows2 = [
-    {
-      LineNumber: 1,
-      ItemCode: "DEF789",
-      ItemName: "Widget A",
-      ItemPackingSpec: "Sample Packing 2",
-      GeneralSpec: "Widget Spec",
-      UOM: "EA",
-      QuantityReceived: 20,
-      UnitPrice: 8.99,
-      QuantityOrdered: 25,
-      TotalPrice: 224.75,
-    },
-    {
-      LineNumber: 2,
-      ItemCode: "GHI012",
-      ItemName: "Accessory B",
-      ItemPackingSpec: "Accessory Packing",
-      GeneralSpec: "Accessory Spec",
-      UOM: "SET",
-      QuantityReceived: 12,
-      UnitPrice: 5.75,
-      QuantityOrdered: 15,
-      TotalPrice: 69,
-    },
-    // Add more sample rows as needed
-  ];
-
-  const sampleRows3 = [
-    {
-      LineNumber: 1,
-      ItemCode: "JKL345",
-      ItemName: "Product X",
-      ItemPackingSpec: "Product Packing",
-      GeneralSpec: "Product Spec",
-      UOM: "KG",
-      QuantityReceived: 50,
-      UnitPrice: 18.25,
-      QuantityOrdered: 60,
-      TotalPrice: 912.5,
-    },
-  ];
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   console.log(dialogActive);
   const fetchPOs = async (id) => {
@@ -148,6 +103,95 @@ export default function PO() {
       setSeverity("error");
       setLoading(false);
       setOpenAlert(true);
+    }
+  };
+
+  const saveOrder = async () => {
+    setLoading(true);
+    try {
+      const headers = {
+        Authorization: `Bearer # ${localStorage.getItem("accessToken")}`,
+        "Content-Type": "application/json",
+      };
+
+      const orderResponse = await fetch("http://localhost:3000/client_orders", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          payload: {
+            order_number: header.PONumber,
+            delivery_date: header.DeliveryDateToDestination,
+            terms: "none",
+            metadata: JSON.stringify({
+              delivery_address: header.DeliveryAddress1,
+              invoice_address: header.SentInvoiceAddress5
+                ? header.SentInvoiceAddress5
+                : "" + " | " + header.SentInvoiceAddress4
+                ? header.SentInvoiceAddress4
+                : "" + " | " + header.SentInvoiceAddress6
+                ? header.SentInvoiceAddress6
+                : "",
+              delivery_date: header.DeliveryDateToDestination,
+            }),
+            status: "draft",
+            remark: "none",
+          },
+        }),
+      });
+      const { sucess, data } = await orderResponse.json();
+      console.log(data);
+
+      if (!sucess) throw new Error(`${header.PONumber} already recorded!`);
+
+      const itemPromises = rows.map(async (row) => {
+        const itemResponse = await fetch("http://0.0.0.0:3000/products", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            payload: {
+              code: row.ItemCode,
+              name: row.ItemName,
+              description: row.ItemName,
+              product_type_id: 1,
+              unit_id: 1,
+            },
+          }),
+        });
+        const item = await itemResponse.json();
+
+        if (!item.sucess) throw new Error("Error Occurred");
+
+        const orderItemResponse = await fetch(
+          "http://0.0.0.0:3000/client_order_items",
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              payload: {
+                client_order_id: data.id,
+                product_id: item.data.id,
+                requested_quantity: row.QuantityOrdered,
+                requested_price: row.UnitPrice,
+              },
+            }),
+          }
+        );
+        const orderItem = await orderItemResponse.json();
+
+        if (!orderItem.sucess) throw new Error("Error Occurred");
+      });
+
+      await Promise.all(itemPromises);
+      setMessage(`Order Recorded Successfully! - ${header.PONumber}`);
+      setSeverity("success");
+      setOpenAlert(true);
+      fetchData();
+    } catch (error) {
+      setMessage(error.message);
+      setSeverity("error");
+      setOpenAlert(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -221,12 +265,12 @@ export default function PO() {
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="List Orders" value="1" />
-              <Tab label="Create Order" value="2" />
-              <Tab label="Prepare Back Order" value="3" />
+              {/* <Tab label="List Orders" value="1" /> */}
+              <Tab label="Create Order" value="1" />
+              <Tab label="Prepare Back Order" value="2" />
             </TabList>
           </Box>
-          <TabPanel value="1">
+          <TabPanel value="0">
             <TabPanel value="1">
               <div style={{ marginLeft: "-12px", marginTop: "-15px" }}>
                 <OrderList
@@ -237,7 +281,7 @@ export default function PO() {
               </div>
             </TabPanel>
           </TabPanel>
-          <TabPanel value="2">
+          <TabPanel value="1">
             <TabContext value={valueSub}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList
@@ -245,7 +289,7 @@ export default function PO() {
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Import Order" value="1" />
-                  <Tab label="Add Order" value="2" />
+                  {/* <Tab label="Add Order" value="2" /> */}
                 </TabList>
               </Box>
               <TabPanel value="1">
@@ -258,13 +302,16 @@ export default function PO() {
                     value={code}
                     focused={code === "" ? false : true}
                     onChange={(e) => {
+                      console.log(e.target.value);
                       setCode(e.target.value);
+                      console.log(code);
                     }}
                   />
                   <Button
                     disabled={loading}
                     onClick={() => {
                       setLoading(true);
+                      console.log(code);
                       fetchPOs(code);
                     }}
                     endIcon={<UilSync style={{ width: "16px" }} />}
@@ -281,8 +328,9 @@ export default function PO() {
                 </div>
                 <POTable
                   setRows={setRows}
-                  headers={headers}
+                  headers={header}
                   loading={loading}
+                  saveOrder={saveOrder}
                   rows={rows}
                 ></POTable>
               </TabPanel>
@@ -291,21 +339,17 @@ export default function PO() {
               </TabPanel>
             </TabContext>
           </TabPanel>
-          <TabPanel value="3">
+          <TabPanel value="2">
             <TabContext value={valueSub2}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList
                   onChange={handleChangeSub2}
                   aria-label="lab API tabs example"
                 >
-                  <Tab label="List Back Orders" value="1" />
-                  <Tab label="Create Back Order" value="2" />
+                  <Tab label="Create Back Order" value="1" />
                 </TabList>
               </Box>
               <TabPanel value="1">
-                <OrderList></OrderList>
-              </TabPanel>
-              <TabPanel value="2">
                 <TextField
                   disabled={loading}
                   select
@@ -316,71 +360,41 @@ export default function PO() {
                   focused={poNumber === "" ? false : true}
                   onChange={(e) => {
                     setPoNumber(e.target.value);
-                    setSubDisplay("none");
                     setLoading(true);
                     setDisplay("block");
                     setTimeout(() => {
                       setLoading(false);
-                      setSubDisplay("block");
                     }, 3000);
                   }}
                 >
-                  <MenuItem value="1">8C03E1E-PO1</MenuItem>
-                  <MenuItem value="2">8C03E1E-PO2</MenuItem>
+                  {orders.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.order_number}
+                    </MenuItem>
+                  ))}
                 </TextField>
                 <br />
                 <br />
                 <Divider sx={{ mb: 5 }}></Divider>
                 <div className="bo" style={{ display: display }}>
-                  <POTable
-                    noHeader={true}
-                    headers={{ Currency: "Euro" }}
-                    loading={loading}
-                    rows={sampleRows2}
-                  ></POTable>
-                  <div className="sub" style={{ display: subDisplay }}>
-                    <POTable
-                      noHeader={true}
-                      headers={{ Currency: "Euro" }}
-                      loading={loading}
-                      rows={sampleRows}
-                    ></POTable>
-                    <POTable
-                      noHeader={true}
-                      headers={{ Currency: "Euro" }}
-                      loading={loading}
-                      rows={sampleRows3}
-                    ></POTable>
-                    <div
-                      className="actions"
-                      style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        marginTop: "25px",
-                      }}
-                    >
-                      <Button
-                        onClick={() => {
-                          setDisplay("none");
-                          setSubDisplay("none");
-                          setPoNumber("");
-                        }}
-                        variant="outlined"
-                        color="error"
-                        style={{ padding: "12px", paddingInline: "50px" }}
-                      >
-                        CANCEL
-                      </Button>
-                      <div className="sapce" style={{ width: "15px" }}></div>
-                      <Button
-                        variant="contained"
-                        color="success"
-                        style={{ padding: "12px", paddingInline: "50px" }}
-                      >
-                        SAVE ORDER
-                      </Button>
-                    </div>
-                  </div>
+                  {orderItems
+                    ? Object.keys(orderItems).map((key, index) => (
+                        <div key={index}>
+                          {" "}
+                          <BOTable
+                            setOpenAlert={setOpenAlert}
+                            setSeverity={setSeverity}
+                            setMessage={setMessage}
+                            key={key}
+                            index={index}
+                            noHeader={true}
+                            headers={{ Currency: "Euro" }}
+                            loading={loading}
+                            rows={orderItems[key]}
+                          />
+                        </div>
+                      ))
+                    : null}
                 </div>
               </TabPanel>
             </TabContext>

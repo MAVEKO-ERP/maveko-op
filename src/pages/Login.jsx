@@ -46,13 +46,13 @@ export default function LoginScreen() {
           setDisabled(false);
         } else {
           localStorage.setItem("accessToken", data.token);
+          localStorage.setItem("name", data.user.name);
           navigate("/po");
           setDisabled(false);
         }
       })
       .catch((error) => {
         console.error("Error during login:", error);
-        navigate("/po")
       });
   };
 

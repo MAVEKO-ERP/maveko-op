@@ -13,7 +13,7 @@ import { currencySymbols } from "./Currencies";
 import ViewOrder from "./ViewOrderDetails";
 import Divider from "@mui/material/Divider";
 
-export default function POTable({ rows, loading, headers, setRows, noHeader }) {
+export default function POTable({ rows, loading, headers, setRows, noHeader, saveOrder }) {
   const total = rows ? rows.reduce((acc, row) => acc + row.TotalPrice, 0) : 0;
   return (
     <>
@@ -68,43 +68,23 @@ export default function POTable({ rows, loading, headers, setRows, noHeader }) {
                 style={{ width: "100%", borderRadius: "5px" }}
               >
                 <Table aria-label="spanning table">
-                  <TableHead style={{ background: "#1976d2" }}>
+                  <TableHead style={{ background: "#fff" }}>
                     <TableRow>
-                      <TableCell style={{ color: "#fff" }}>#</TableCell>
-                      <TableCell style={{ color: "#fff" }}>
-                        Item Number
-                      </TableCell>
-                      <TableCell style={{ color: "#fff", maxWidth: "250px" }}>
+                      <TableCell>#</TableCell>
+                      <TableCell>Item Number</TableCell>
+                      <TableCell style={{ maxWidth: "250px" }}>
                         Description
                       </TableCell>
-                      <TableCell style={{ color: "#fff" }}>U/M</TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Qty. Billed
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Qty. Received
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Unit Cost
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Qty
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Discount
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Amount
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Tax
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Tax Rate
-                      </TableCell>
-                      <TableCell style={{ color: "#fff" }} align="right">
-                        Total
-                      </TableCell>
+                      <TableCell>U/M</TableCell>
+                      <TableCell align="right">Qty. Billed</TableCell>
+                      <TableCell align="right">Qty. Received</TableCell>
+                      <TableCell align="right">Unit Cost</TableCell>
+                      <TableCell align="right">Qty</TableCell>
+                      <TableCell align="right">Discount</TableCell>
+                      <TableCell align="right">Amount</TableCell>
+                      <TableCell align="right">Tax</TableCell>
+                      <TableCell align="right">Tax Rate</TableCell>
+                      <TableCell align="right">Total</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -154,14 +134,14 @@ export default function POTable({ rows, loading, headers, setRows, noHeader }) {
                         align="left"
                         style={{
                           fontWeight: 900,
-                          background: "#1976d2",
+                          background: "#808080",
                           color: "#fff",
                         }}
                       >
                         Subtotal
                       </TableCell>
                       <TableCell
-                        style={{ background: "#1976d2", color: "#fff" }}
+                        style={{ background: "#808080", color: "#fff" }}
                         align="right"
                       >
                         {total.toFixed(2).toString() +
@@ -193,6 +173,7 @@ export default function POTable({ rows, loading, headers, setRows, noHeader }) {
               </Button>
               <div className="sapce" style={{ width: "15px" }}></div>
               <Button
+                onClick={saveOrder}
                 variant="contained"
                 color="success"
                 style={{ padding: "12px", paddingInline: "50px" }}

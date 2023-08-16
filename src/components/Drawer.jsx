@@ -12,6 +12,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { useNavigate } from "react-router-dom";
+import Badge from "@mui/material/Badge";
 import logo from "../assets/favi.png";
 import { menus, subMenus } from "./Menus";
 
@@ -57,7 +58,7 @@ export default function LeftDrawer({
         </Toolbar>
       </AppBar>
       <Drawer
-      disablePadding
+        disablePadding
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -117,8 +118,15 @@ export default function LeftDrawer({
                   }}
                 >
                   <ListItemIcon sx={{ color: menu.logout ? "red" : "" }}>
-                    {menu.icon}
+                    <Badge
+                      invisible={!menu.notification}
+                      badgeContent={4}
+                      color="error"
+                    >
+                      {menu.icon}
+                    </Badge>
                   </ListItemIcon>
+
                   <ListItemText
                     sx={{ ml: -2, color: menu.logout ? "red" : "" }}
                     primary={menu.name}
