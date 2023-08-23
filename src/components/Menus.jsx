@@ -12,7 +12,7 @@ import { UilSignout } from '@iconscout/react-unicons'
 export const menus = [
   {
     id: 1,
-    name: "Purchse Orders",
+    name: "Purchase Orders",
     link: "/po",
     icon: <UilBox />,
     description: "list all purchase orders or create a new one",

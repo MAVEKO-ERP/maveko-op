@@ -217,10 +217,10 @@ export default function Customer() {
           <TabPanel value="1">
             <TabPanel value="1">
               <div style={{ marginLeft: "-12px", marginTop: "-15px" }}>
-                <SupplierList
+                {/* <SupplierList
                   setDialogActive={setDialogActive}
                   open={setOpenDialog}
-                ></SupplierList>
+                ></SupplierList> */}
               </div>
             </TabPanel>
           </TabPanel>

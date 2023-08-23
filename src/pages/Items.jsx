@@ -6,7 +6,6 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import SupplierList from "../components/SupplierList";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -23,6 +22,7 @@ export default function Item() {
   const [subTitle, setSubTitle] = useState("> List Items");
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogActive, setDialogActive] = useState("1");
+  const [itemCode, setItemCode] = useState("");
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [salesUnitPrice, setSalesUnitPrice] = useState("0.00");
@@ -34,6 +34,12 @@ export default function Item() {
   const [supplierValue, setSupplierValue] = useState("");
 
   const inputFields = [
+    {
+      label: "Item Code",
+      value: itemCode,
+      change: setItemCode,
+      width: "332.5px",
+    },
     {
       label: "Item Name",
       value: itemName,
@@ -101,6 +107,53 @@ export default function Item() {
     },
   ];
 
+  const sampleData = [
+    {
+      id: 1,
+      itemName: "Item Name",
+      itemDescription: "Description",
+      purchasingUnitPrice: "Purchase Price",
+      sellingUnitPrice: "Selling Price",
+      salesUnit: "Unit",
+      taxClass: "1",
+      priceValidFrom: "2023-08-13",
+      priceValidTo: "2023-08-31",
+      supplier: "1",
+    },
+    {
+      id: 2,
+      itemName: "Sample Item 2",
+      itemDescription: "Description for Sample Item 2",
+      purchasingUnitPrice: "120.00",
+      sellingUnitPrice: "180.00",
+      salesUnit: "Box",
+      taxClass: "2",
+      priceValidFrom: "2023-08-14",
+      priceValidTo: "2023-09-15",
+      supplier: "2",
+    },
+    {
+      id: 3,
+      itemName: "Sample Item 3",
+      itemDescription: "Description for Sample Item 3",
+      purchasingUnitPrice: "90.00",
+      sellingUnitPrice: "135.00",
+      salesUnit: "Piece",
+      taxClass: "1",
+      priceValidFrom: "2023-08-15",
+      priceValidTo: "2023-09-30",
+      supplier: "3",
+    },
+  ];
+
+  const displayProperties = [
+    { name: "itemName", label: "Item Name" },
+    { name: "itemDescription", label: "Item Description" },
+    { name: "purchasingUnitPrice", label: "Purchasing Unit Price" },
+    { name: "sellingUnitPrice", label: "Selling Unit Price" },
+    { name: "salesUnit", label: "Sales Unit" },
+  ];
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
     setSubTitle(
@@ -125,17 +178,16 @@ export default function Item() {
         setTitleIcon={setTitleIcon}
       />
       <Box sx={{ ml: "270px", mt: "80px", width: "86.5%" }}>
-        <Dialog fullWidth maxWidth="md" open={openDialog} onClose={handleClose}>
+        <Dialog fullWidth maxWidth="lg" open={openDialog} onClose={handleClose}>
           <DialogTitle id="alert-dialog-title">{dialogActive}</DialogTitle>
           <DialogContent sx={{ minWidth: "100%" }}>
             <Divider sx={{ mb: 1.5 }}></Divider>
-            <TextField
-              minRows={5}
-              multiline
-              label="Remark"
-              variant="outlined"
-              sx={{ minWidth: "100%", mt: 1 }}
-            ></TextField>
+            <div style={{ marginLeft: "20px" }} className="form">
+              <CreateForm
+                inputFields={inputFields}
+                noActions={true}
+              ></CreateForm>
+            </div>
           </DialogContent>
           <DialogActions sx={{ mr: 2, mt: -1 }}>
             <Button
@@ -173,6 +225,8 @@ export default function Item() {
                 <SupplierList
                   setDialogActive={setDialogActive}
                   open={setOpenDialog}
+                  data={sampleData}
+                  displayProperties={displayProperties}
                 ></SupplierList>
               </div>
             </TabPanel>

@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,6 +12,11 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import { currencySymbols } from "./Currencies";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 
 export default function POTable({
   triggerDisplay,
@@ -25,6 +30,26 @@ export default function POTable({
 }) {
   const [editableRows, setEditableRows] = useState([...rows]);
   const [disable, setDisable] = useState(triggerDisplay);
+  const [open, setOpen] = useState(false);
+  const [supplierEmail, setSupplierEmail] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [addedRemark, setAddedRemark] = useState("");
+
+  useEffect(() => {
+    if (loading) {
+      setSupplierEmail("");
+      setEmailBody("");
+      setAddedRemark("");
+    }
+  }, [loading]);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleCellEdit = (event, rowIndex, field) => {
     const newValue = event.target.textContent;
@@ -39,7 +64,11 @@ export default function POTable({
         0
       )
     : 0;
-
+  const [emailTitle, setEmailTitle] = useState(
+    "Confirmation Request for Back Order " +
+      editableRows[index].client_order.order_number +
+      editableRows[index].supplier_name
+  );
   const saveOrder = async () => {
     try {
       const headers = {
@@ -125,7 +154,7 @@ export default function POTable({
       setOpenAlert(true);
       setDisable(true);
     } finally {
-      setDisable(true)
+      setDisable(true);
       console.log("done");
     }
   };
@@ -150,6 +179,79 @@ export default function POTable({
       ) : rows ? (
         rows.length > 0 ? (
           <>
+            <Dialog fullWidth maxWidth="md" open={open} onClose={handleClose}>
+              <DialogTitle>
+                EMAIL FOR{" "}
+                {editableRows[index].client_order.order_number +
+                  editableRows[index].supplier_name}
+              </DialogTitle>
+              <DialogContent>
+                <div className="head">
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    value={supplierEmail}
+                    label="Supplier Email"
+                    type="email"
+                    fullWidth
+                    variant="outlined"
+                    onChange={(e) => {
+                      setSupplierEmail(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="Email Title"
+                    type="email"
+                    fullWidth
+                    variant="outlined"
+                    value={emailTitle}
+                    onChange={(e) => {
+                      setEmailTitle(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    multiline
+                    maxRows={5}
+                    rows={5}
+                    label="Email Body"
+                    type="email"
+                    fullWidth
+                    variant="outlined"
+                    value={emailBody}
+                    onChange={(e) => {
+                      setEmailBody(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    multiline
+                    maxRows={2}
+                    rows={2}
+                    label="Additinal Remark"
+                    type="email"
+                    fullWidth
+                    variant="outlined"
+                    value={addedRemark}
+                    onChange={(e) => {
+                      setAddedRemark(e.target.value);
+                    }}
+                  />
+                </div>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={handleClose}>Save Email</Button>
+              </DialogActions>
+            </Dialog>
             <Box
               style={{
                 display: disable ? "block" : "block",
@@ -165,7 +267,9 @@ export default function POTable({
               >
                 <h2 style={{ lineHeight: 0, fontWeight: 900 }}>
                   {editableRows[index].client_order.order_number +
-                    editableRows[index].supplier_name}
+                    (editableRows[index].supplier_name
+                      ? editableRows[0].supplier_name
+                      : "")}
                 </h2>
               </div>
               <Divider></Divider>
@@ -202,14 +306,32 @@ export default function POTable({
                         <TableCell align="left" contentEditable>
                           {row.product.id}
                         </TableCell>
-                        <TableCell align="left">{row.product.code}</TableCell>
-                        <TableCell align="left">{row.customer_code}</TableCell>
+                        <TableCell
+                          style={{
+                            color: editableRows[index].supplier_name
+                              ? ""
+                              : "red",
+                            fontWeight: editableRows[index].supplier_name
+                              ? ""
+                              : 900,
+                          }}
+                          align="left"
+                        >
+                          {row.customer_code ? row.product.code : "NO SUPPLIER"}
+                        </TableCell>
+                        <TableCell align="left">
+                          {row.customer_code
+                            ? row.customer_code
+                            : row.product.code}
+                        </TableCell>
                         <TableCell style={{ maxWidth: "250px" }} align="left">
                           {row.product.name}
                         </TableCell>
                         <TableCell
                           align="center"
-                          contentEditable
+                          contentEditable={
+                            editableRows[index].supplier_name ? true : false
+                          }
                           onBlur={(e) =>
                             handleCellEdit(e, rowIndex, "requested_quantity")
                           }
@@ -219,8 +341,20 @@ export default function POTable({
                         <TableCell align="center">
                           {row.requested_price.toFixed(2)}
                         </TableCell>
-                        <TableCell align="center">
-                          {row.product.supplier_price.toFixed(2)}
+                        <TableCell
+                          style={{
+                            color: editableRows[index].supplier_name
+                              ? ""
+                              : "red",
+                            fontWeight: editableRows[index].supplier_name
+                              ? ""
+                              : 900,
+                          }}
+                          align="center"
+                        >
+                          {row.product.supplier_price
+                            ? row.product.supplier_price.toFixed(2)
+                            : "NO SUPPLIER"}
                         </TableCell>
                         <TableCell align="right">
                           {(row.requested_price * row.requested_quantity)
@@ -267,14 +401,44 @@ export default function POTable({
             >
               <Button
                 disabled={disable}
-                onClick={saveOrder}
+                onClick={
+                  editableRows[0].supplier_name
+                    ? saveOrder
+                    : () => {
+                        setMessage(
+                          "No Suppliers found for the following items!"
+                        );
+                        setSeverity("error");
+                        setOpenAlert(true);
+                      }
+                }
                 variant="contained"
-                color="success"
+                color={editableRows[0].supplier_name ? "success" : "error"}
                 style={{ padding: "12px", paddingInline: "50px" }}
               >
                 SAVE{" - "}
                 {editableRows[index].client_order.order_number +
                   editableRows[index].supplier_name}
+              </Button>
+              <div className="space" style={{ width: "20px" }}></div>
+              <Button
+                disabled={disable}
+                onClick={
+                  editableRows[0].supplier_name
+                    ? handleClickOpen
+                    : () => {
+                        setMessage(
+                          "No Suppliers found for the following items!"
+                        );
+                        setSeverity("error");
+                        setOpenAlert(true);
+                      }
+                }
+                variant="outlined"
+                color={editableRows[0].supplier_name ? "warning" : "error"}
+                style={{ padding: "12px", paddingInline: "50px" }}
+              >
+                EDIT EMAIL
               </Button>
             </div>
           </>

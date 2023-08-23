@@ -10,16 +10,10 @@ import Button from "@mui/material/Button";
 import { UilSync } from "@iconscout/react-unicons";
 import POTable from "../components/POTable";
 import BOTable from "../components/BOTable";
-import CreateOrder from "../components/CreateOrder";
 import MenuItem from "@mui/material/MenuItem";
 import { UilBox } from "@iconscout/react-unicons";
 import AlertMessage from "../components/Alert";
-import OrderList from "../components/OrderList";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 import Divider from "@mui/material/Divider";
-import DialogActions from "@mui/material/DialogActions";
 
 export default function PO() {
   const [title, setTitle] = useState("Purchase Orders");
@@ -27,8 +21,8 @@ export default function PO() {
   const [value, setValue] = useState("1");
   const [valueSub, setValueSub] = useState("1");
   const [valueSub2, setValueSub2] = useState("1");
-  const [subTitle, setSubTitle] = useState("> List Orders");
-  const [code, setCode] = useState("A135140324B5494CA6A1A9FD85B3B3DE");
+  const [subTitle, setSubTitle] = useState("> Prepare Purchase Order");
+  const [code, setCode] = useState("");
   const [poNumber, setPoNumber] = useState("");
   const [rows, setRows] = useState([]);
   const [header, setHeaders] = useState({});
@@ -36,16 +30,13 @@ export default function PO() {
   const [openAlert, setOpenAlert] = useState(false);
   const [message, setMessage] = useState("Success!");
   const [severity, setSeverity] = useState("success");
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogActive, setDialogActive] = useState("1");
   const [display, setDisplay] = useState("none");
   const [orders, setOrders] = useState([]);
   const [orderItems, setOrderItems] = useState([]);
   const [displayBO, setDisplayBO] = useState(false);
-
-  const handleClose = () => {
-    setOpenDialog(false);
-  };
+  const [supplierEmail, setSupplierEmail] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [addedRemark, setAddedRemark] = useState("");
 
   useEffect(() => {
     async function fetchData1() {
@@ -85,7 +76,6 @@ export default function PO() {
     fetchData();
   }, []);
 
-  console.log(dialogActive);
   const fetchPOs = async (id) => {
     setRows([]);
     try {
@@ -230,70 +220,25 @@ export default function PO() {
         titleIcon={titleIcon}
         setTitleIcon={setTitleIcon}
       />
-      <Dialog fullWidth maxWidth="md" open={openDialog} onClose={handleClose}>
-        <DialogTitle id="alert-dialog-title">{dialogActive}</DialogTitle>
-        <DialogContent sx={{ minWidth: "100%" }}>
-          <Divider sx={{ mb: 1.5 }}></Divider>
-          <TextField
-            minRows={5}
-            multiline
-            label="Remark"
-            variant="outlined"
-            sx={{ minWidth: "100%", mt: 1 }}
-          ></TextField>
-        </DialogContent>
-        <DialogActions sx={{ mr: 2, mt: -1 }}>
-          <Button
-            sx={{ padding: "10px", paddingInline: "30px", marginRight: "5px" }}
-            variant="outlined"
-            color="error"
-            onClick={handleClose}
-          >
-            CANCEL
-          </Button>
-          <Button
-            sx={{ padding: "10px", paddingInline: "30px" }}
-            variant="contained"
-            color="success"
-            onClick={handleClose}
-          >
-            SAVE
-          </Button>
-        </DialogActions>
-      </Dialog>
       <Box sx={{ ml: "270px", mt: "80px", width: "86.5%" }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange} aria-label="lab API tabs example">
-              {/* <Tab label="List Orders" value="1" /> */}
               <Tab label="Prepare Purchase Order" value="1" />
               <Tab label="Prepare Back Order" value="2" />
             </TabList>
           </Box>
-          <TabPanel value="0">
-            <TabPanel value="1">
-              <div style={{ marginLeft: "-12px", marginTop: "-15px" }}>
-                <OrderList
-                  type="po"
-                  setDialogActive={setDialogActive}
-                  open={setOpenDialog}
-                ></OrderList>
-              </div>
-            </TabPanel>
-          </TabPanel>
           <TabPanel value="1">
             <TabContext value={valueSub}>
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <TabList
-                  onChange={handleChangeSub}
-                  aria-label="lab API tabs example"
-                >
-                  <Tab label="Import Order" value="1" />
-                  {/* <Tab label="Add Order" value="2" /> */}
+              <Box sx={{ borderBottom: 1, borderColor: "divider", ml: -2.5 }}>
+                <TabList onChange={handleChangeSub}>
+                  <Tab label="MXP" value="1" />
+                  <Tab label="RCCL" value="2" />
+                  <Tab label="CTX" value="3" />
                 </TabList>
               </Box>
               <TabPanel value="1">
-                <div style={{ display: "flex" }}>
+                <div style={{ display: "flex", marginLeft: "-25px" }}>
                   <TextField
                     disabled={loading}
                     label="PO LOGIN CODE"
@@ -326,22 +271,21 @@ export default function PO() {
                     FETCH
                   </Button>
                 </div>
-                <POTable
-                  setRows={setRows}
-                  headers={header}
-                  loading={loading}
-                  saveOrder={saveOrder}
-                  rows={rows}
-                ></POTable>
-              </TabPanel>
-              <TabPanel value="2">
-                <CreateOrder></CreateOrder>
+                <div className="po-list" style={{ marginLeft: "-25px" }}>
+                  <POTable
+                    setRows={setRows}
+                    headers={header}
+                    loading={loading}
+                    saveOrder={saveOrder}
+                    rows={rows}
+                  ></POTable>
+                </div>
               </TabPanel>
             </TabContext>
           </TabPanel>
           <TabPanel value="2">
             <TabContext value={valueSub2}>
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider", ml: -2.5 }}>
                 <TabList
                   onChange={handleChangeSub2}
                   aria-label="lab API tabs example"
@@ -350,7 +294,10 @@ export default function PO() {
                 </TabList>
               </Box>
               <TabPanel value="1">
-                <div className="pb" style={{ display: "flex" }}>
+                <div
+                  className="pb"
+                  style={{ display: "flex", marginLeft: "-25px" }}
+                >
                   <TextField
                     disabled={loading}
                     select
@@ -379,6 +326,9 @@ export default function PO() {
                     onClick={() => {
                       setPoNumber("");
                       setDisplay("none");
+                      setSupplierEmail("");
+                      setEmailBody("");
+                      setAddedRemark("");
                     }}
                     disabled={loading}
                     style={{ display: poNumber === "" ? "none" : "block" }}
@@ -389,13 +339,22 @@ export default function PO() {
                   </Button>
                 </div>
                 <br />
-                <Divider sx={{ mb: 2, ml: -2 }}></Divider>
-                <div className="bo" style={{ display: display }}>
+                <Divider sx={{ mb: 2, ml: -5.5 }}></Divider>
+                <div
+                  className="bo"
+                  style={{ display: display, marginLeft: "-25px" }}
+                >
                   {orderItems
                     ? Object.keys(orderItems).map((key, index) => (
                         <div key={index}>
                           {" "}
                           <BOTable
+                            supplierEmail={supplierEmail}
+                            setSupplierEmail={setSupplierEmail}
+                            emailBody={emailBody}
+                            setEmailBody={setEmailBody}
+                            addedRemark={addedRemark}
+                            setAddedRemark={setAddedRemark}
                             triggerDisplay={displayBO}
                             setOpenAlert={setOpenAlert}
                             setSeverity={setSeverity}
